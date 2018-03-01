@@ -1,0 +1,156 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><title>表单插件</title>     
+    <link href="../../lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+    <link href="../../lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
+    <script src="../../lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <script src="../../lib/ligerUI/js/ligerui.all.js"></script>
+    <script src="../../lib/ligerUI/js/plugins/ligerForm.js"></script>
+    <script src="../../lib/ligerUI/js/plugins/ligerComboBox.js"></script>
+    <script src="../../lib/ligerUI/js/plugins/ligerCheckBoxList.js"></script>
+    <script src="../../lib/ligerUI/js/plugins/ligerRadioList.js"></script>
+    <script src="../../lib/ligerUI/js/plugins/ligerListBox.js"></script>
+    <script src="../../lib/ligerUI/js/plugins/ligerDateEditor.js" type="text/javascript"></script>
+    <script src="../../lib/ligerUI/js/plugins/ligerCheckBox.js" type="text/javascript"></script>
+    <script src="../../lib/ligerUI/js/plugins/ligerButton.js" type="text/javascript"></script>
+    <script src="../../lib/ligerUI/js/plugins/ligerDialog.js" type="text/javascript"></script>
+    <script src="../../lib/ligerUI/js/plugins/ligerRadio.js" type="text/javascript"></script>
+    <script src="../../lib/ligerUI/js/plugins/ligerSpinner.js" type="text/javascript"></script>
+    <script src="../../lib/ligerUI/js/plugins/ligerTextBox.js" type="text/javascript"></script> 
+    <script src="../../lib/ligerUI/js/plugins/ligerTip.js" type="text/javascript"></script>
+    <script src="../../lib/jquery-validation/jquery.validate.min.js" type="text/javascript"></script> 
+    <script src="../../lib/jquery-validation/messages_cn.js" type="text/javascript"></script>
+    <script src="../../lib/js/my_ajax_post.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        $(function ()
+        {
+            $("#form1").ligerForm();
+            var dialog = frameElement.dialog;
+            var dialogData = dialog.get('data');//获取data参数
+            $('#civilcode').prop("disabled",true);
+            var form = new liger.get("form1");
+            form.setData(dialogData.info);
+        });
+    </script>
+    <style type="text/css">
+           body{ font-size:12px;}
+        .l-table-edit {}
+        .l-table-edit-td{ padding:1px;}
+    </style>
+
+ <script type="text/javascript">
+     function submitForm()
+     {
+        var form = new liger.get("form1");
+        var data = form.getData();
+        if(!check_valid(data))
+            return;
+            
+        data.__status = "update";
+        data.__old_key_value = data.id;
+
+        var url="/sip/chinadivision?Action=ModData";
+        var _data=JSON.stringify([data]);
+        function onsuccess(data)
+        {
+            closeDialog();
+        }
+        my_ajax_post(url,_data,onsuccess,"text");
+     }
+    function closeDialog()
+    {
+        var dialog = frameElement.dialog;
+        var form = new liger.get("form1");
+        var data = form.getData();
+        //dialog.set('data',data);
+        dialog.close();//关闭dialog 
+    }
+    function check_valid(data)
+    {
+        var vid = data.civilcode;
+        var vid_length = vid.length;
+        if(vid.length!=2 && vid.length!=4 && vid.length!=6 && vid.length!=8)
+        {
+            alert("'国标编号'需要是2、4、6、或8位的数字串。");
+            return false;
+        }
+        
+        if(vid.length==2)
+        {
+            if(isValidIGbid2(data.civilcode))
+            {
+                if(data.parentid=="" || data.parentid==undefined)
+                    return true;
+                else
+                {
+                    alert("'国标编号'是2位数字串时，'父行政区划id'无需填写。");
+                    return false;
+                }
+            }
+            else
+            {
+                alert("'国标编号'如果是2位，则需要填写2位数字串。");
+                return false;
+            }
+        }
+        if(vid.length==4)
+        {
+            if(isValidIGbid4(data.civilcode) && isValidIGbid2(data.parentid))
+                return true
+            else
+            {
+                alert("'国标编号'如果是4位，则需要填写4位数字串，'父行政区划id'需填写2位数字串。");
+                return false;
+            }
+        }
+        if(vid.length==6)
+        {
+            if(isValidIGbid6(data.civilcode) && isValidIGbid4(data.parentid))
+                return true
+            else
+            {
+                alert("'国标编号'如果是6位，则需要填写6位数字串，'父行政区划id'需填写4位数字串。");
+                return false;
+            }
+        }
+        if(vid.length==8)
+        {
+            if(isValidIGbid8(data.civilcode) && isValidIGbid6(data.parentid))
+                return true
+            else
+            {
+                alert("'国标编号'如果是8位，则需要填写8位数字串，'父行政区划id'需填写6位数字串。");
+                return false;
+            }
+        }
+        return true;
+    }
+    </script>
+</head>
+
+<body style="padding:10px">
+<div id="form1" >
+<input value="提交" type="button" onclick="submitForm()" />
+<input value="关闭" type="button" onclick="closeDialog()" />
+<div></div>
+        <table cellpadding="1" cellspacing="1" class="l-table-edit" >
+            <tr>
+                <td align="right" class="l-table-edit-td">国标编号:</td>
+                <td align="left" class="l-table-edit-td"><input name="civilcode" type="text" id="civilcode" ltype="text" validate="{required:true,minlength:6,maxlength:20}" /></td>
+                <td align="left"></td>
+            </tr>
+            <tr>
+                <td align="right" class="l-table-edit-td">名称:</td>
+                <td align="left" class="l-table-edit-td"><input name="name" type="text" id="name" ltype="text" validate="{required:true,minlength:6,maxlength:8}" /></td>
+                <td align="left"></td>
+            </tr>
+            <tr>
+                <td align="right" class="l-table-edit-td">父行政区划id:</td>
+                <td align="left" class="l-table-edit-td"><input name="parentid" type="text" id="parentid" ltype="text" validate="{required:true,minlength:6,maxlength:20}" /></td>
+                <td align="left"></td>
+            </tr>
+        </table>
+ <br />
+    </div>
+</body>
+</html>

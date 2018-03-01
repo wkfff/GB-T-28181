@@ -1,0 +1,351 @@
+﻿<html>
+<head>
+    <title></title>
+    <link  href="../../lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+    <script src="../../lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <script src="../../lib/json2.js" type="text/javascript"></script>
+    <script src="../../lib/ligerUI/js/core/base.js" type="text/javascript"></script>
+    <script src="../../lib/ligerUI/js/plugins/ligerTab.js" type="text/javascript"></script>
+    <script src="../../lib/ligerUI/js/plugins/ligerDialog.js" type="text/javascript"></script>
+    <script src="../../lib/ligerUI/js/plugins/ligerTextBox.js" type="text/javascript"></script>
+    <script src="../../lib/ligerUI/js/plugins/ligerCheckBox.js" type="text/javascript"></script>
+    <script src="../../lib/ligerUI/js/plugins/ligerComboBox.js" type="text/javascript"></script>
+    <script src="../../lib/ligerUI/js/plugins/ligerFilter.js" type="text/javascript"></script>
+    <script src="../../lib/ligerUI/js/plugins/ligerToolBar.js" type="text/javascript"></script>
+    <script src="../../lib/ligerUI/js/plugins/ligerGrid.js" type="text/javascript"></script>
+    <script src="../../lib/ligerUI/js/plugins/ligerDateEditor.js" type="text/javascript"></script>
+    <script src="../../lib/ligerUI/js/plugins/ligerSpinner.js" type="text/javascript"></script>
+    <script src="../../lib/ligerUI/js/plugins/ligerForm.js" type="text/javascript"></script>
+    <script src="../../lib/ligerUI/js/plugins/ligerButton.js" type="text/javascript"></script>
+    <script src="../../lib/js/my_ajax_post.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        //去掉  大于小于包括,并改变顺序
+        $.ligerDefaults.Filter.operators['string'] =
+        $.ligerDefaults.Filter.operators['text'] =
+        ["like" , "equal", "notequal" ];
+        var manager;
+        var useData = [{ use: true, text: '是' }, { use: false, text: '否'}];
+        var lowertype = [{type:0,text:'国标前端设备' },{type:1,text:'国标下级平台'}];
+        var media_protocol = [{protocol:0,text:'RTP/AVP' },{protocol:1,text:'TCP'},{protocol:2,text:'RTP/AVP/TCP'}];
+        $(function ()
+        {
+            window['g'] = 
+            manager = $("#lowergrid").ligerGrid({
+                columns: [
+                { display: '国标编号', name: 'id', width: 180, align: 'center' },
+                { display: '下级名称', name: 'name', width: 180, align: 'center' },
+                { display: '类型', name: 'type', type: 'text',
+                    editor: { type:'select',data:lowertype,valueField:'type'},
+                    render: function (item){
+                        if(item.type == 0)return '国标前端设备';
+                        else return '国标下级平台';
+                    }
+                },
+                //{ display: '密码', name: 'password', align: 'center', editor: { type: 'text' } },
+                //{ display: '检测心跳', name: 'keepalive', type: 'boolean',
+                //    editor: { type: 'select', data: useData, valueField: 'use' },
+                //    render: function (item){
+                //        if (item.use == true) return '是';
+				//		else return '否';
+                //    }
+                //},
+                //{ display: '心跳间隔', name: 'interval', align: 'center', editor: { type: 'text' } },
+                //{ display: '超时次数', name: 'maxtimeout', align: 'center', editor: { type: 'text' } },
+                //{ display: '开启流中转', name: 'relay', type: 'boolean',
+                //    editor: { type: 'select', data: useData, valueField: 'use' },
+                //    render: function (item){
+                //        if (item.use == true) return '是';
+				//		else return '否';
+                //    }
+                //},
+                //{ display: '注册开启鉴权', name: 'auth', type: 'boolean',
+                //    editor: { type: 'select', data: useData, valueField: 'use' },
+                //    render: function (item){
+                //        if (item.use == true) return '是';
+				//		else return '否';
+                //    }
+                //},
+                //{ display: '查询目录', name: 'querycatalog', type: 'boolean',
+                //    editor: { type: 'select', data: useData, valueField: 'use' },
+                //    render: function (item){
+                //        if (item.use == true) return '是';
+				//		else return '否';
+                //    }
+                //},
+                //{ display: '订阅目录', name: 'subscribe', type: 'boolean',
+                //    editor: { type: 'select', data: useData, valueField: 'use' },
+                //    render: function (item){
+                //        if (item.use == true) return '是';
+				//		else return '否';
+                //    }
+                //},
+                //{ display: '校时', name: 'adjusttime', type: 'boolean',
+                //    editor: { type: 'select', data: useData, valueField: 'use' },
+                //    render: function (item){
+                //        if (item.use == true) return '是';
+				//		else return '否';
+                //    }
+                //},
+                //{ display: '媒体传输协议', name: 'media_protocol', width: '8%', type: 'text',
+                //    editor: { type:'select',data:media_protocol,valueField:'protocol'},
+                //    render: function (item){
+                //        if(item.protocol == 0)return 'RTP/AVP';
+                //        else if(item.protocol == 1)return 'TCP';
+                //        else return 'RTP/AVP/TCP';
+                //    }
+                //},
+                //{ display: '启用', name: 'use', type: 'boolean',
+                //    editor: { type: 'select', data: useData, valueField: 'use' },
+                //    render: function (item){
+                //        if (item.use == true) return '是';
+				//		else return '否';
+                //    }
+                //},
+                { display: 'IP', name: 'ip', align: 'center'},
+                { display: '注册时间', name: 'reg_time', align: 'center' },
+                { display: '注册有效期', name: 'exp_time', align: 'center' },
+                { display: '通道数', name: 'channel_total', align: 'center', editor: { type: 'text' } },
+                { display: '在线数', name: 'channel_on', align: 'center', editor: { type: 'text' } },
+                { display: '离线数', name: 'channel_off', align: 'center', editor: { type: 'text' } },
+                { display: '在线状态', name: 'online', align: 'center'},
+                ],
+                checkbox: true,
+                //hideLoadButton:true,
+				isScroll: false,
+                contentType: 'application/json',
+                isChecked: f_isChecked, 
+                onCheckRow: f_onCheckRow, 
+                onCheckAllRow: f_onCheckAllRow,
+                width: '100%', 
+                height: '100%',
+				usePager: false,
+                url: '/sip/device?Action=GetData',
+                dataAction: 'server',//服务器排序
+                //enabledEdit: true,
+                onToNext: function()
+                {
+                    this.isDataChanged = false;
+                },
+                onBeforeShowData: function()
+                {
+                    var p=this.options;//可以包编辑过的数据暂存，在这里修改后再显示
+                },
+                onError: function(){ goto_login(); },
+                tree: { columnName: 'id' }
+            }
+            );
+        });
+		
+		
+        function itemclick(item)
+        {
+            alert(item.text);
+        }
+
+        /*
+        表单分页多选
+        即利用onCheckRow将选中的行记忆下来，并利用isChecked将记忆下来的行初始化选中
+        */
+        var checkedCustomer = [];
+        function findCheckedCustomer(id)
+        {
+            for(var i =0;i<checkedCustomer.length;i++)
+            {
+                if(checkedCustomer[i] == id) return i;
+            }
+            return -1;
+        }
+        function addCheckedCustomer(id)
+        {
+            if(findCheckedCustomer(id) == -1)
+                checkedCustomer.push(id);
+        }
+        function removeCheckedCustomer(id)
+        {
+            var i = findCheckedCustomer(id);
+            if(i==-1) return;
+            checkedCustomer.splice(i,1);
+        }
+        function f_isChecked(rowdata)
+        {
+            if (findCheckedCustomer(rowdata.id) == -1)
+                return false;
+            return true;
+        }
+        function f_onCheckRow(checked, data)
+        {
+            if (checked) addCheckedCustomer(data.id);
+            else removeCheckedCustomer(data.id);
+        }
+        function f_getChecked()
+        {
+            alert(checkedCustomer.join(','));
+        }
+        function f_onCheckAllRow(checked)
+        {
+            for (var rowid in this.records)
+            {
+                if(checked)
+                    addCheckedCustomer(this.records[rowid]['id']);
+                else
+                    removeCheckedCustomer(this.records[rowid]['id']);
+            }
+        }
+
+        /*
+        添加一行
+        */
+        var newrowid = 100;
+        function addNewRow()
+        {
+            var row = manager.getSelectedRow();
+            //参数1:rowdata(非必填)
+            //参数2:插入的位置 Row Data 
+            //参数3:之前或者之后(非必填)
+            manager.addRow({ 
+                id: '15010100002000000001',
+				use: true,
+                auth: true,
+				password: '12345678',
+				keepalive: true,
+				interval: 3600,
+				maxtimeout: 3,
+				relay: true,
+				querycatalog: true,
+				subscribe: true,
+				adjusttime: true,
+            }, row);
+        }
+        /*
+        删除选中
+        */
+        function deleteRow()
+        { 
+            manager.deleteSelectedRow();
+            commitData();
+        }
+        /*
+        获取更新
+        */
+        function getRows() {
+            var data = manager.rows;
+            alert(JSON.stringify(data));
+        }
+        function getData()
+        { 
+            var data = manager.getData();
+            alert(JSON.stringify(data));
+        } 
+        function getAdd()
+        {
+            var data = manager.getAdded();
+            alert(JSON.stringify(data));
+        }
+        function getDelete()
+        {
+            var data = manager.getDeleted();
+            alert(JSON.stringify(data));
+        }
+        function getUpdate()
+        {
+            var data = manager.getUpdated();
+            alert(JSON.stringify(data));
+        }
+
+        /*
+        获取选中行
+        */
+        function getSelected()
+        {
+            var row = manager.getSelectedRow();
+            if (!row) { alert('请选择行'); return; }
+            alert(JSON.stringify(row));
+        }
+        
+        /*
+        选中行导出到excel
+        */
+        function exportExcel()
+        {
+            gridExportModule.exportSelectRows('lowergrid', null, 'test.csv');
+        }
+        
+        /*
+        提交数据
+        */
+        function commitData()
+        {
+            var change = manager.getChanges();
+            if (!change) { return; }
+            var url='/sip/device?Action=ModData';
+            $.post(url, JSON.stringify(change), function(data){
+			if(data=="ok")
+			{
+				$("#lowergrid").ligerGetGridManager().loadData(true);
+			}
+			});
+			
+            return;
+        }
+        function refreshGrid()
+        {
+            $("#lowergrid").ligerGetGridManager().loadData(true);
+        }
+        function addNewDialog()
+        {
+            $.ligerDialog.open({
+                height:600,
+                width: 380,
+                title : '添加下级域',
+                url: 'lower_add.html', 
+                showMax: false,
+                showToggle: true,
+                showMin: false,
+                isResize: true,
+                slide: true
+            });
+            $("#lowergrid").ligerGetGridManager().loadData(true);
+        }
+        function modifyOne()
+        {
+            var row = manager.getSelectedRow();
+            if (!row) { alert('请选择行'); return; }
+            
+            $.ligerDialog.open({
+                height:600,
+                width: 380,
+                title : '修改下级域',
+                url: 'lower_modify.html', 
+                showMax: false,
+                showToggle: true,
+                showMin: false,
+                isResize: true,
+                slide: true,
+                data: {
+                    info: row
+                }
+            });
+        }
+    </script>
+    <script language="JavaScript" type="text/javascript"> 
+    <!-- 
+    function getDataFromServer()
+    {
+        manager.reload(true,'scroll');
+    }
+    window.setInterval(getDataFromServer,2000); 
+    //--> 
+    </script> 
+</head>
+<body style="padding: 0px;  width: 100%; height: 100%;">
+    <!--
+	<div style="width: 100%; height: 5%;">
+    <a class="l-button" style="width: 6%; top: 3px; float: left; margin-left: 10px;" onclick="refreshGrid()">刷新</a>
+    <a class="l-button" style="width: 6%; top: 3px; float: left; margin-left: 10px;" onclick="addNewDialog()">添加</a>
+    <a class="l-button" style="width: 6%; top: 3px; float: left; margin-left: 10px;" onclick="deleteRow()">删除</a>
+    <a class="l-button" style="width: 6%; top: 3px; float: left; margin-left: 10px;" onclick="modifyOne()">修改选中项</a>
+	</div>
+    -->
+    <div id="lowergrid" style="width: 100%; height: 90%;"></div>
+</body>
+</html>

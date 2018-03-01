@@ -1,0 +1,224 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><title>表单插件</title>     
+    <link href="../../lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+    <link href="../../lib/ligerUI/skins/Gray2014/css/all.css" rel="stylesheet" />
+    <script src="../../lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <script src="../../lib/ligerUI/js/ligerui.all.js"></script>
+    <script src="../../lib/ligerUI/js/plugins/ligerForm.js"></script>
+    <script src="../../lib/ligerUI/js/plugins/ligerComboBox.js"></script>
+    <script src="../../lib/ligerUI/js/plugins/ligerCheckBoxList.js"></script>
+    <script src="../../lib/ligerUI/js/plugins/ligerRadioList.js"></script>
+    <script src="../../lib/ligerUI/js/plugins/ligerListBox.js"></script>
+    <script src="../../lib/ligerUI/js/plugins/ligerDateEditor.js" type="text/javascript"></script>
+    <script src="../../lib/ligerUI/js/plugins/ligerCheckBox.js" type="text/javascript"></script>
+    <script src="../../lib/ligerUI/js/plugins/ligerButton.js" type="text/javascript"></script>
+    <script src="../../lib/ligerUI/js/plugins/ligerDialog.js" type="text/javascript"></script>
+    <script src="../../lib/ligerUI/js/plugins/ligerRadio.js" type="text/javascript"></script>
+    <script src="../../lib/ligerUI/js/plugins/ligerSpinner.js" type="text/javascript"></script>
+    <script src="../../lib/ligerUI/js/plugins/ligerTextBox.js" type="text/javascript"></script> 
+    <script src="../../lib/ligerUI/js/plugins/ligerTip.js" type="text/javascript"></script>
+    <script src="../../lib/jquery-validation/jquery.validate.min.js" type="text/javascript"></script> 
+    <script src="../../lib/jquery-validation/messages_cn.js" type="text/javascript"></script>
+    <script src="../../lib/js/my_ajax_post.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        $(function ()
+        {
+            $("#form1").ligerForm({inputWidth: 200});
+            fillDefault();
+        });
+    </script>
+    <style type="text/css">
+           body{ font-size:12px;}
+        .l-table-edit {}
+        .l-table-edit-td{ padding:1px;}
+    </style>
+
+ <script type="text/javascript">
+     function submitForm()
+     {
+        var form = new liger.get("form1");
+        var data = form.getData();
+        if(!check_valid(data))
+            return;
+            
+        data.__status = "add";
+        data.port = parseInt(data.port);
+        
+        var url="/sip/pvg?Action=ModData";
+        var _data=JSON.stringify([data]);
+        function onsuccess(data)
+        {
+            closeDialog();
+        }
+        my_ajax_post(url,_data,onsuccess,"text");
+     }
+     function fillDefault()
+     {
+         var obj = {
+            id          : "11000000001120000001",
+            name        : "pvg服务器",
+            ip          : "127.0.0.1",
+            port        : "2100",
+            username      : "admin",
+            password      : "admin",
+            querycatalog  : true,
+            subscribe     : false,
+            querystatus   : true,
+            recType       : "0",
+            pvgtype       : "0",
+            use           : true,
+         };
+         var form = new liger.get("form1");
+         form.setData(obj);
+     }
+    function closeDialog()
+    {
+        var dialog = frameElement.dialog;
+        dialog.close();//关闭dialog 
+    }
+    function check_valid(data)
+    {
+        if(!isValidIGbid(data.id))
+        {
+            alert("'国标编号'需要是20位的数字串。");
+            return false;
+        }
+        var vname = data.name;
+        if(vname==undefined || vname=="")
+        {
+            alert("'名称'是必填项。");
+            return false;
+        }
+        var vip = data.ip;
+        if(vip==undefined || vip=="")
+        {
+            alert("'IP地址'是必填项。");
+            return false;
+        }
+        if(!isIP(vip))
+        {
+            alert("'IP地址'格式错误。");
+            return false;
+        }
+        var vport = parseInt(data.port);
+        if(isNaN(vport) || vport<1024 || vport>65535)
+        {
+            alert("'端口'范围是[1024 到 65535]，默认是2100");
+            return false;
+        }
+        var vusername = data.username;
+        if(vusername==undefined || vusername=="")
+        {
+            alert("'用户名'是必填项。");
+            return false;
+        }
+        var vpassword = data.password;
+        if(vpassword==undefined || vpassword=="")
+        {
+            alert("'密码'是必填项。");
+            return false;
+        }
+        var vpvgtype = data.pvgtype;
+        if(vpvgtype=="0")
+        {
+            alert("'PVG类型'是必填项。请仔细选择！");
+            return false;
+        }
+        return true;
+    }
+    </script>
+</head>
+
+<body style="padding:10px">
+<div id="form1" >
+<!--<input value="填充默认配置" type="button" onclick="fillDefault()" />-->
+<input value="提交" type="button" onclick="submitForm()" />
+<input value="关闭" type="button" onclick="closeDialog()" />
+<div></div>
+        <table cellpadding="1" cellspacing="1" class="l-table-edit" >
+            <tr>
+                <td align="right" class="l-table-edit-td">国标编号:</td>
+                <td align="left" class="l-table-edit-td"><input name="id" type="text" id="id" ltype="text" validate="{required:true,minlength:6,maxlength:20}" /></td>
+                <td align="left"></td>
+            </tr>
+            <tr>
+                <td align="right" class="l-table-edit-td">名称:</td>
+                <td align="left" class="l-table-edit-td"><input name="name" type="text" id="name" ltype="text" validate="{required:true}" /></td>
+                <td align="left"></td>
+            </tr>
+            <tr>
+                <td align="right" class="l-table-edit-td">IP地址:</td>
+                <td align="left" class="l-table-edit-td"><input name="ip" type="text" id="ip" ltype="text" validate="{required:true}" /></td>
+                <td align="left"></td>
+            </tr>
+            <tr>
+                <td align="right" class="l-table-edit-td">端口:</td>
+                <td align="left" class="l-table-edit-td"><input name="port" type="text" id="port" ltype="text" validate="{required:true}" /></td>
+                <td align="left"></td>
+            </tr>
+            <tr>
+                <td align="right" class="l-table-edit-td">用户名:</td>
+                <td align="left" class="l-table-edit-td"><input name="username" type="text" id="username" ltype="text" validate="{required:true,minlength:6,maxlength:8}" /></td>
+                <td align="left"></td>
+            </tr>
+            <tr>
+                <td align="right" class="l-table-edit-td">密码:</td>
+                <td align="left" class="l-table-edit-td"><input name="password" type="text" id="password" ltype="text" validate="{required:true,minlength:6,maxlength:8}" /></td>
+                <td align="left"></td>
+            </tr>
+            <tr>
+                <td align="right" class="l-table-edit-td">启动时查询目录:</td>
+                <td align="left" class="l-table-edit-td">
+                <input name="querycatalog" class="ui-checkbox" type="text"  text="婚否" value="Y"  />
+                </td>
+                <td align="left"></td>
+            </tr>
+            <tr>
+                <td align="right" class="l-table-edit-td">启动后订阅:</td>
+                <td align="left" class="l-table-edit-td">
+                <input name="subscribe" class="ui-checkbox" type="text"  text="婚否" value="Y"  />
+                </td>
+                <td align="left"></td>
+            </tr>
+            <tr>
+                <td align="right" class="l-table-edit-td">上线后更新目录状态:</td>
+                <td align="left" class="l-table-edit-td">
+                <input name="querystatus" class="ui-checkbox" type="text"  text="婚否" value="Y"  />
+                </td>
+                <td align="left"></td>
+            </tr>
+            <tr>
+                <td align="right" class="l-table-edit-td">录像查询策略:</td>
+                <td align="left" class="l-table-edit-td">
+                <select name="recType" validate="{required:true}">
+	                <option value="0" selected="selected">默认根据信令TO值查询</option>
+	                <option value="1">设备录像查询</option>
+	                <option value="2">服务器录像查询</option>
+                </select>
+                </td>
+                <td align="left"></td>
+            </tr>
+            <tr>
+                <td align="right" class="l-table-edit-td">PVG类型:</td>
+                <td align="left" class="l-table-edit-td">
+                <select name="pvgtype" validate="{required:true}">
+	                <option value="0" selected="selected"></option>
+	                <option value="2">PM点位配置不是按行政区划组织</option>
+	                <option value="5">PM点位配置按行政区划组织</option>
+                </select>
+                </td>
+                <td align="left"></td>
+            </tr>
+            <tr>
+                <td align="right" class="l-table-edit-td">是否使用:</td>
+                <td align="left" class="l-table-edit-td">
+                <input name="use" class="ui-checkbox" type="text"  text="婚否" value="Y"  />
+                </td>
+                <td align="left"></td>
+            </tr>
+        </table>
+ <br />
+    </div>
+</body>
+</html>
